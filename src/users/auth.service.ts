@@ -17,6 +17,7 @@ export class AuthService {
 
         //cada byte tem 2 carateres, aqui eu converto binario pra string
         const salt = randomBytes(8).toString('hex');
+        //hash ele vai salver o password com o salt juntos
         const hash = await scrypt(password, salt, 32) as Buffer;
 
         const result = salt + '.' + hash.toString('hex');

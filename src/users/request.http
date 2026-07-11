@@ -1,4 +1,10 @@
-## Create new user
+## Who am I
+GET http://localhost:3000/auth/whoami
+
+### Sign out
+POST http://localhost:3000/auth/signout
+
+### Sign up new user
 POST http://localhost:3000/auth/signup
 Content-Type: application/json
 
@@ -7,7 +13,7 @@ Content-Type: application/json
     "password": "123"
 }
 
-### Create new user
+### Sign in as existing user
 POST http://localhost:3000/auth/signin
 Content-Type: application/json
 
