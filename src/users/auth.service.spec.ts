@@ -55,5 +55,12 @@ describe('Auth Service', () => {
         fakeUsersService.find = () => Promise.resolve([{ email: 'dfsdfiksdj@gmail.com', password: 'pasdjasaosjkd' } as User]);
 
         await expect(service.signin('sijsdifsdninjsfom@gmail.com', 'aj9wrwe')).rejects.toThrow(BadRequestException);
-    })
+    });
+
+    it('returns a user if correct password is provided', async () => {
+        fakeUsersService.find = () => Promise.resolve([{ id: 1, email: '123@gmail.com', password: '1234567' } as User]);
+
+        const user = await service.signin('123@gmail.com', '1234567');
+        expect(user).toBeDefined();
+    });
 });
