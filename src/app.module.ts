@@ -8,11 +8,17 @@ import { ReportsModule } from './reports/reports.module';
 import { User } from './users/user.entity';
 import { Report } from './reports/reports.entity';
 import cookieSession from 'cookie-session';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [TypeOrmModule.forRoot({
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: `.env.${process.env.NODE_ENV}`
+    }),
+    TypeOrmModule.forRoot({
     type: "better-sqlite3",
-    database: "db.sqlite",
+    database: process.env.NODE_ENV == 'test' ? 'test.sqlite' : 'db.sqlite',
     entities: [User, Report],
     synchronize: true
   }), UsersModule, ReportsModule],
