@@ -8,7 +8,7 @@ import { ReportsModule } from './reports/reports.module';
 import { User } from './users/user.entity';
 import { Report } from './reports/reports.entity';
 import cookieSession from 'cookie-session';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -16,12 +16,24 @@ import { ConfigModule } from '@nestjs/config';
       isGlobal: true,
       envFilePath: `.env.${process.env.NODE_ENV}`
     }),
-    TypeOrmModule.forRoot({
-    type: "better-sqlite3",
-    database: process.env.NODE_ENV == 'test' ? 'test.sqlite' : 'db.sqlite',
-    entities: [User, Report],
-    synchronize: true
-  }), UsersModule, ReportsModule],
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => {
+        return {
+          type: 'better-sqlite3',
+          database: config.get<string>('DB_NAME'),
+          synchronize: true,
+          entities: [User, Report]
+        }
+      }
+    }),
+    //   TypeOrmModule.forRoot({
+    //   type: "better-sqlite3",
+    //   database: process.env.NODE_ENV == 'test' ? 'test.sqlite' : 'db.sqlite',
+    //   entities: [User, Report],
+    //   synchronize: true
+    // }),
+    UsersModule, ReportsModule],
   controllers: [AppController],
   providers: [
     AppService,
@@ -29,12 +41,12 @@ import { ConfigModule } from '@nestjs/config';
       provide: APP_PIPE,
       useValue: new ValidationPipe({ whitelist: true })
     },
-  ],  
+  ],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-    .apply(cookieSession({ keys: ['dsfsdfasfa']}))
-    .forRoutes('*')
+      .apply(cookieSession({ keys: ['dsfsdfasfa'] }))
+      .forRoutes('*')
   }
 }
