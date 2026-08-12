@@ -7,20 +7,22 @@ import { User } from 'src/users/user.entity';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { ReportDto } from './dto/report.dto';
 import { ApproveReportDto } from './dto/approve-report.dto';
+import { AdminGuard } from 'src/guards/admin.guard';
 
-@Serialize(ReportDto)
 @Controller('reports')
 export class ReportsController {
     constructor(private readonly reportsService: ReportsService) { }
 
     @Post()
     @UseGuards(AuthGuard)
+    @Serialize(ReportDto)
     createReport(@Body() body: CreateReportDto, @CurrentUser() user: User) {
         return this.reportsService.create(body, user);
     }
 
+    @UseGuards(AdminGuard)
     @Patch('/:id')
     changeApproval(@Param('id') id: string, @Body() body: ApproveReportDto) {
-        return this.reportsService.changeApproval(id, body.approved);  
+        return this.reportsService.changeApproval(id, body.approved);
     }
 }
