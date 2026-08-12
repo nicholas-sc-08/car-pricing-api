@@ -10,12 +10,20 @@ import { GetEstimateDto } from './dto/get-estimate.dto';
 export class ReportsService {
     constructor(@InjectRepository(Report) private readonly repo: Repository<Report>) { }
 
-    async createEstimate(estimateDto: GetEstimateDto) {
+    async createEstimate({ make, model, lng, lat, year, mileage }: GetEstimateDto) {
         // esse :make significa que é a coluna do bdd
         return this.repo.createQueryBuilder()
-            .select('*')
-            .where('make = :make', { make: estimateDto.make })
-            .getRawMany();
+            .select('AVG(price)', 'price')
+            .where('make = :make', { make })
+            .andWhere('model = :model', { model })
+            .andWhere('lng - :lng BETWEEN -5 AND 5', { lng })
+            .andWhere('lat - :lat BETWEEN -5 AND 5', { lat })
+            .andWhere('year - :year BETWEEN -3 AND 3', { year })
+            .orderBy('ABS(mileage - :mileage)', 'DESC')
+            .setParameters({ mileage })
+            .limit(3)
+            .getRawOne();
+            //o orderby nao tem segundo parametro por isso que defini separado
     }
 
     async create(reportDto: CreateReportDto, user: User) {
