@@ -5,11 +5,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { ReportsModule } from './reports/reports.module';
-import { User } from './users/user.entity';
-import { Report } from './reports/reports.entity';
 import cookieSession from 'cookie-session';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AppDataSource } from 'data-source';
+import { AppDataSource } from '../data-source';
 
 @Module({
   imports: [

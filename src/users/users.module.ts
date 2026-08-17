@@ -4,7 +4,7 @@ import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { AuthService } from './auth.service';
 import { User } from './user.entity';
-import { CurrentUserMiddleware } from 'src/middlewares/current-user.middleware';
+import { CurrentUserMiddleware } from '../middlewares/current-user.middleware';
 
 @Module({
   // aqui eu crio o repo automaticamente listando um array do tipo user da entity
