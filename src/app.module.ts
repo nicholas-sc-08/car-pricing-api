@@ -9,6 +9,7 @@ import { User } from './users/user.entity';
 import { Report } from './reports/reports.entity';
 import cookieSession from 'cookie-session';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AppDataSource } from 'data-source';
 
 @Module({
   imports: [
@@ -16,23 +17,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       isGlobal: true,
       envFilePath: `.env.${process.env.NODE_ENV}`
     }),
-    TypeOrmModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: (config: ConfigService) => {
-        return {
-          type: 'better-sqlite3',
-          database: config.get<string>('DB_NAME'),
-          synchronize: true,
-          entities: [User, Report]
-        }
-      }
-    }),
-    //   TypeOrmModule.forRoot({
-    //   type: "better-sqlite3",
-    //   database: process.env.NODE_ENV == 'test' ? 'test.sqlite' : 'db.sqlite',
-    //   entities: [User, Report],
-    //   synchronize: true
-    // }),
+    TypeOrmModule.forRoot({ ...AppDataSource.options, autoLoadEntities: true }),
     UsersModule, ReportsModule],
   controllers: [AppController],
   providers: [
@@ -44,9 +29,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
   ],
 })
 export class AppModule {
+  constructor(private readonly configService: ConfigService) { }
+
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(cookieSession({ keys: ['dsfsdfasfa'] }))
+      .apply(cookieSession({ keys: [this.configService.get('COOKIE_KEY', '')] }))
       .forRoutes('*')
   }
 }
